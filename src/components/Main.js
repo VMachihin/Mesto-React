@@ -9,15 +9,21 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
   const [cards, setCards] = React.useState([]);
 
   React.useEffect(() => {
-    api.getUserInfo().then((userData) => {
-      setUserName(userData.name);
-      setUserDescription(userData.about);
-      setUserAvatar(userData.avatar);
-    });
+    api
+      .getUserInfo()
+      .then((userData) => {
+        setUserName(userData.name);
+        setUserDescription(userData.about);
+        setUserAvatar(userData.avatar);
+      })
+      .catch((err) => console.error(err));
   }, [userName, userDescription, userAvatar]);
 
   React.useEffect(() => {
-    api.getCards().then((cardsData) => setCards(cardsData));
+    api
+      .getCards()
+      .then((cardsData) => setCards(cardsData))
+      .catch((err) => console.error(err));
   }, []);
 
   return (
@@ -38,7 +44,9 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
 
       <section className="gallery" aria-label="Блок с карточками красивых мест">
         <ul className="gallery__list">
-          <Card cards={cards} onCardClick={onCardClick} />
+          {cards.map((card) => {
+            return <Card key={card._id} card={card} onCardClick={onCardClick} />;
+          })}
         </ul>
       </section>
     </main>
