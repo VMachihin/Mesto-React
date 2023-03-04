@@ -1,16 +1,7 @@
 import React from 'react';
 import PopupWithForm from './PopupWithForm';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function EditAvatarPopup({ isOpen, onClose, closeAllPopups, onUpdateAvatar }) {
-  const currentUser = React.useContext(CurrentUserContext);
-
-  const [avatar, setAvatar] = React.useState(currentUser.avatar);
-
-  React.useEffect(() => {
-    setAvatar(currentUser.avatar);
-  }, [currentUser]);
-
+function EditAvatarPopup({ isOpen, onClose, closeAllPopups, onUpdateAvatar, isLoading }) {
   const inputRef = React.useRef();
 
   function handleSubmit(e) {
@@ -20,10 +11,11 @@ function EditAvatarPopup({ isOpen, onClose, closeAllPopups, onUpdateAvatar }) {
       avatar: inputRef.current.value,
     });
   }
+
   return (
     <PopupWithForm
       title={'Обновить аватар'}
-      buttonText={'Сохранить'}
+      buttonText={isLoading ? 'Сохранение...' : 'Сохранить'}
       name={'changeAvatar'}
       isOpen={isOpen}
       closeAllPopups={closeAllPopups}
@@ -39,7 +31,7 @@ function EditAvatarPopup({ isOpen, onClose, closeAllPopups, onUpdateAvatar }) {
         required
         ref={inputRef}
       />
-      <span className="popup__text-error linkAvatar-error"></span>
+      <span className="popup__text-error linkAvatar-error" />
     </PopupWithForm>
   );
 }

@@ -1,29 +1,28 @@
 import React from 'react';
 import PopupWithForm from './PopupWithForm';
 
-function AddPlacePopup({ isOpen, onClose, closeAllPopups, onAddPlace }) {
-  const [place, setPlace] = React.useState('');
-  const [linkImg, setLinkImg] = React.useState('');
+import UseForm from '../hooks/UseForm';
 
-  function handleAddPlace(e) {
-    setPlace(e.target.value);
-  }
-  function handleAddLinkImg(e) {
-    setLinkImg(e.target.value);
-  }
+function AddPlacePopup({ isOpen, onClose, closeAllPopups, onAddPlace, isLoading }) {
+  const { values, handleChange, setValues } = UseForm({});
 
   function handleSubmit(e) {
     e.preventDefault();
 
-    onAddPlace({
-      place,
-      linkImg,
-    });
+    onAddPlace(values);
   }
+
+  React.useEffect(() => {
+    setValues({
+      place: '',
+      linkImg: '',
+    });
+  }, [isOpen, setValues]);
+
   return (
     <PopupWithForm
       title={'Новое место'}
-      buttonText={'Создать'}
+      buttonText={isLoading ? 'Сохранение...' : 'Создать'}
       name={'addCards'}
       isOpen={isOpen}
       closeAllPopups={closeAllPopups}
@@ -36,8 +35,8 @@ function AddPlacePopup({ isOpen, onClose, closeAllPopups, onAddPlace }) {
         id="place"
         className="popup__input popup__input_addCard"
         placeholder="Название"
-        value={place || ''}
-        onChange={handleAddPlace}
+        value={values.place || ''}
+        onChange={handleChange}
         required
         minLength="2"
         maxLength="40"
@@ -49,8 +48,8 @@ function AddPlacePopup({ isOpen, onClose, closeAllPopups, onAddPlace }) {
         id="linkImg"
         className="popup__input popup__input_addCard"
         placeholder="Ссылка на картинку"
-        value={linkImg || ''}
-        onChange={handleAddLinkImg}
+        value={values.linkImg || ''}
+        onChange={handleChange}
         required
       />
       <span className="popup__text-error linkImg-error"></span>

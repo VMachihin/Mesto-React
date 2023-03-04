@@ -10,31 +10,35 @@ import { api } from '../utils/Api';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
 function App() {
-  const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [onClose, setOnClose] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({ name: '', link: '' });
   const [currentUser, setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  // обработчик Escape
+  const isOpen =
+    isEditAvatarPopupOpen || isEditProfilePopupOpen || isAddPlacePopupOpen || selectedCard.link;
 
   function handleEditAvatarClick() {
-    setEditAvatarPopupOpen(true);
+    setIsEditAvatarPopupOpen(true);
     setOnClose(true);
   }
   function handleEditProfileClick() {
-    setEditProfilePopupOpen(true);
+    setIsEditProfilePopupOpen(true);
     setOnClose(true);
   }
   function handleAddPlaceClick() {
-    setAddPlacePopupOpen(true);
+    setIsAddPlacePopupOpen(true);
     setOnClose(true);
   }
   function closeAllPopups() {
     setOnClose(false);
-    setEditProfilePopupOpen(false);
-    setEditAvatarPopupOpen(false);
-    setAddPlacePopupOpen(false);
+    setIsEditProfilePopupOpen(false);
+    setIsEditAvatarPopupOpen(false);
+    setIsAddPlacePopupOpen(false);
     setSelectedCard({ name: '', link: '' });
   }
   function handleCardClick(card) {
@@ -61,29 +65,41 @@ function App() {
       .catch((err) => console.error(err));
   }
   function handleUpdateUser(updateUserData) {
+    setIsLoading(true);
     api
       .editingProfile(updateUserData)
       .then((userData) => {
         setCurrentUser(userData);
       })
       .then(() => closeAllPopups())
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setIsLoading(false);
+      });
   }
   function handleAddPlaceSubmit(userNewCard) {
+    setIsLoading(true);
     api
       .addNewCard(userNewCard)
       .then((newCard) => setCards([...cards, newCard]))
       .then(() => closeAllPopups())
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setIsLoading(false);
+      });
   }
   function handleUpdateAvatar(avatar) {
+    setIsLoading(true);
     api
       .changeAvatar(avatar)
       .then((newAvatar) => {
         setCurrentUser(newAvatar);
       })
       .then(() => closeAllPopups())
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setIsLoading(false);
+      });
   }
 
   React.useEffect(() => {
@@ -94,6 +110,22 @@ function App() {
       })
       .catch((err) => console.error(err));
   }, []);
+
+  // обработчик Escape
+  React.useEffect(() => {
+    function closeByEscape(evt) {
+      if (evt.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('keydown', closeByEscape);
+      // clean up
+      return () => {
+        document.removeEventListener('keydown', closeByEscape);
+      };
+    }
+  }, [isOpen]);
 
   return (
     <div className="page">
@@ -117,6 +149,7 @@ function App() {
           onClose={onClose}
           closeAllPopups={closeAllPopups}
           onUpdateUser={handleUpdateUser}
+          isLoading={isLoading}
         />
 
         <EditAvatarPopup
@@ -124,6 +157,7 @@ function App() {
           onClose={onClose}
           closeAllPopups={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar}
+          isLoading={isLoading}
         />
 
         <AddPlacePopup
@@ -131,6 +165,7 @@ function App() {
           onClose={onClose}
           closeAllPopups={closeAllPopups}
           onAddPlace={handleAddPlaceSubmit}
+          isLoading={isLoading}
         />
       </CurrentUserContext.Provider>
     </div>

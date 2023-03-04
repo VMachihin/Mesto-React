@@ -11,60 +11,60 @@ export default class Api {
     return Promise.reject(`Кукусики: ${response.status}`);
   }
 
+  _request(url, options) {
+    return fetch(url, options).then(this._checkResponse);
+  }
+
   getUserInfo() {
-    return fetch(`${this._url}/users/me`, {
-      headers: this._headers,
-    }).then((res) => this._checkResponse(res));
+    return this._request(`${this._url}/users/me`, { headers: this._headers });
   }
 
   getCards() {
-    return fetch(`${this._url}/cards`, {
-      headers: this._headers,
-    }).then((res) => this._checkResponse(res));
+    return this._request(`${this._url}/cards`, { headers: this._headers });
   }
 
   editingProfile(userData) {
-    return fetch(`${this._url}/users/me`, {
+    return this._request(`${this._url}/users/me`, {
       method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify({
         name: userData.name,
         about: userData.about,
       }),
-    }).then((res) => this._checkResponse(res));
+    });
   }
 
   addNewCard(newCardData) {
-    return fetch(`${this._url}/cards`, {
+    return this._request(`${this._url}/cards`, {
       method: 'POST',
       headers: this._headers,
       body: JSON.stringify({
         name: newCardData.place,
         link: newCardData.linkImg,
       }),
-    }).then((res) => this._checkResponse(res));
+    });
   }
 
   deleteCardApi(cardId) {
-    return fetch(`${this._url}/cards/${cardId}`, {
+    return this._request(`${this._url}/cards/${cardId}`, {
       method: 'DELETE',
       headers: this._headers,
-    }).then((res) => this._checkResponse(res));
+    });
   }
 
   changeLikeCardStatus(cardId, isLiked) {
-    return fetch(`${this._url}/cards/${cardId}/likes`, {
+    return this._request(`${this._url}/cards/${cardId}/likes`, {
       method: isLiked ? 'PUT' : 'DELETE',
       headers: this._headers,
-    }).then((res) => this._checkResponse(res));
+    });
   }
 
   changeAvatar(avatar) {
-    return fetch(`${this._url}/users/me/avatar`, {
+    return this._request(`${this._url}/users/me/avatar`, {
       method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify(avatar),
-    }).then((res) => this._checkResponse(res));
+    });
   }
 }
 

@@ -26,7 +26,7 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
               type="button"
               className={`card__btn ${cardLikeButtonClassName}`}
               onClick={() => onCardLike(card)}
-            ></button>
+            />
             <span className="card__counter-likes">{card.likes.length}</span>
           </div>
         </div>
@@ -37,7 +37,7 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
             onClick={() => {
               onCardDelete(card._id);
             }}
-          ></button>
+          />
         )}
       </article>
     </li>
