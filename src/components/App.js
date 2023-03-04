@@ -81,7 +81,7 @@ function App() {
     setIsLoading(true);
     api
       .addNewCard(userNewCard)
-      .then((newCard) => setCards([...cards, newCard]))
+      .then((newCard) => setCards([newCard, ...cards]))
       .then(() => closeAllPopups())
       .catch((err) => console.log(err))
       .finally(() => {
