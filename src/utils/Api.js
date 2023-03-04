@@ -52,25 +52,18 @@ export default class Api {
     }).then((res) => this._checkResponse(res));
   }
 
-  likeCard(cardId) {
+  changeLikeCardStatus(cardId, isLiked) {
     return fetch(`${this._url}/cards/${cardId}/likes`, {
-      method: 'PUT',
+      method: isLiked ? 'PUT' : 'DELETE',
       headers: this._headers,
     }).then((res) => this._checkResponse(res));
   }
 
-  dislikeCard(cardId) {
-    return fetch(`${this._url}/cards/${cardId}/likes`, {
-      method: 'DELETE',
-      headers: this._headers,
-    }).then((res) => this._checkResponse(res));
-  }
-
-  changeAvatar(linkAvatar) {
+  changeAvatar(avatar) {
     return fetch(`${this._url}/users/me/avatar`, {
       method: 'PATCH',
       headers: this._headers,
-      body: JSON.stringify(linkAvatar),
+      body: JSON.stringify(avatar),
     }).then((res) => this._checkResponse(res));
   }
 }

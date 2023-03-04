@@ -1,43 +1,30 @@
 import React from 'react';
-import { api } from '../utils/Api';
 import Card from './Card';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
-  const [userName, setUserName] = React.useState('');
-  const [userDescription, setUserDescription] = React.useState('');
-  const [userAvatar, setUserAvatar] = React.useState('');
-  const [cards, setCards] = React.useState([]);
-
-  React.useEffect(() => {
-    api
-      .getUserInfo()
-      .then((userData) => {
-        setUserName(userData.name);
-        setUserDescription(userData.about);
-        setUserAvatar(userData.avatar);
-      })
-      .catch((err) => console.error(err));
-  }, [userName, userDescription, userAvatar]);
-
-  React.useEffect(() => {
-    api
-      .getCards()
-      .then((cardsData) => setCards(cardsData))
-      .catch((err) => console.error(err));
-  }, []);
+function Main({
+  cards,
+  onEditProfile,
+  onAddPlace,
+  onEditAvatar,
+  onCardClick,
+  onCardLike,
+  onCardDelete,
+}) {
+  const currentUser = React.useContext(CurrentUserContext);
 
   return (
     <main className="content">
       <section className="profile">
         <div className="profile__image-wrp" onClick={onEditAvatar}>
-          <img src={userAvatar} alt="аватар профиля" className="profile__img" />
+          <img src={currentUser.avatar} alt="аватар профиля" className="profile__img" />
         </div>
         <div className="info">
           <div className="info__name-wrapper">
-            <h1 className="info__title">{userName}</h1>
+            <h1 className="info__title">{currentUser.name}</h1>
             <button type="button" className="info__editing-btn" onClick={onEditProfile}></button>
           </div>
-          <p className="info__subtitle">{userDescription}</p>
+          <p className="info__subtitle">{currentUser.about}</p>
         </div>
         <button type="button" className="profile__add-btn" onClick={onAddPlace}></button>
       </section>
@@ -45,7 +32,15 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
       <section className="gallery" aria-label="Блок с карточками красивых мест">
         <ul className="gallery__list">
           {cards.map((card) => {
-            return <Card key={card._id} card={card} onCardClick={onCardClick} />;
+            return (
+              <Card
+                key={card._id}
+                card={card}
+                onCardClick={onCardClick}
+                onCardLike={onCardLike}
+                onCardDelete={onCardDelete}
+              />
+            );
           })}
         </ul>
       </section>
